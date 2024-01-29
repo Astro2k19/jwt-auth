@@ -1,49 +1,45 @@
-import LoginForm from "./components/LoginForm.tsx";
-import {useAppDispatch, useAppSelector} from "./store/store.ts";
-import {logoutApi} from "./api/logoutApi.ts";
-import {useEffect} from "react";
-import {checkAuthApi} from "./api/checkAuthApi.ts";
-import {fetchUsers} from "./api/fetchUsers.ts";
+import './index.css'
+import {Route, Routes} from "react-router-dom";
+import Layout from "./pages/Layout.tsx";
+import Home from "./pages/Home.tsx";
+import Admin from "./pages/Admin.tsx";
+import Editor from "./pages/Editor.tsx";
+import Lounge from "./pages/Lounge.tsx";
+import Login from "./pages/Login.tsx";
+import Register from "./pages/Register.tsx";
+import Missing from "./pages/Missing.tsx";
+import LinkPage from "./pages/LinkPage.tsx";
+import Unauthorized from "./pages/Unauthorized.tsx";
+import {RequiredAuth} from "./components/RequiredAuth.tsx";
+import {UserRoles} from "./model/User.ts";
 
 
 function App() {
-  const {isLoading, isAuth, user, users} = useAppSelector(state => state.user)
-    const dispatch = useAppDispatch()
-
-    useEffect(() => {
-        if (localStorage.getItem('token')) {
-         dispatch(checkAuthApi())
-        }
-    }, [])
-
-
-    if (isLoading) {
-        return 'Loading...'
-    }
-
-  if (!isAuth || !user) {
     return (
-        <div>
-          Log in or authorize
-          <LoginForm />
-        </div>
-    )
-  }
+        <Routes>
+            <Route path={'/'} element={<Layout/>}>
+                <Route element={<RequiredAuth allowedRoles={[UserRoles.User]} />}>
+                    <Route path={'/'} element={<Home />} />
+                </Route>
+                <Route element={<RequiredAuth allowedRoles={[UserRoles.Admin]} />}>
+                    <Route path={'admin'} element={<Admin />} />
+                </Route>
+                <Route element={<RequiredAuth allowedRoles={[UserRoles.Editor]} />} >
+                    <Route path={'editor'} element={<Editor />} />
+                </Route>
+                <Route element={<RequiredAuth allowedRoles={[UserRoles.User, UserRoles.Editor, UserRoles.Admin]} />}>
+                    <Route path={'lounge'} element={<Lounge />} />
+                </Route>
 
-  return (
-    <div>
-      You are logged in!
-      Account is {user.isActivated ? 'activated' : 'not activated'}
-      Your email {user.email}
-      <button onClick={() => dispatch(logoutApi())}>Log out</button>
-      <button onClick={() => dispatch(fetchUsers())}>Get all users</button>
-        {users ? users.map(item => (
-            <div>
-                {item.email}
-            </div>
-        )) : undefined}
-    </div>
-  )
+                <Route path={'login'} element={<Login />} />
+                <Route path={'register'} element={<Register />} />
+                <Route path={'linkpage'} element={<LinkPage />} />
+                <Route path={'unauthorized'} element={<Unauthorized />} />
+
+                <Route path={'*'} element={<Missing />} />
+            </Route>
+        </Routes>
+    )
 }
 
 export default App
