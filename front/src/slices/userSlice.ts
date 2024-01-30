@@ -1,98 +1,56 @@
-import {createSlice} from '@reduxjs/toolkit'
+import {createSlice, isAnyOf, PayloadAction} from '@reduxjs/toolkit'
 import {User} from "../model/User.ts";
-import {loginApi} from "../api/loginApi.ts";
-import {registerApi} from "../api/registerApi.ts";
-import {logoutApi} from "../api/logoutApi.ts";
-import {checkAuthApi} from "../api/checkAuthApi.ts";
-import {fetchUsers} from "../api/fetchUsers.ts";
-import {ApiError} from "../model/response/ApiError.ts";
+import {authApi} from "../api/authApi.ts";
 
 interface UserState {
-    user?: User
+    user: User | null
+    accessToken: string | null
     isAuth: boolean
-    isLoading: boolean
+    isPersist: boolean
     users?: User[]
-    error?: ApiError
 }
 
 const initialState: UserState = {
+    user: null,
+    accessToken: null,
+    isPersist: false,
     isAuth: false,
-    isLoading: false
 }
 
 const userSlice = createSlice({
     name: 'user',
     initialState: initialState,
     reducers: {
-        // setUser: (state, {payload}: PayloadAction<User>) => {
-        //     state.user = payload
-        // },
-        // setAuth: (state, {payload}: PayloadAction<boolean>) => {
-        //     state.isAuth = payload
-        // },
+        setPersist: (state, {payload}: PayloadAction<boolean>) => {
+            state.isPersist = payload
+        },
+        logout: (state) => {
+            state.user = null
+            state.isAuth = false
+            state.accessToken = null
+        }
     },
     extraReducers: (builder) => {
-        // loginApi
-        builder.addCase(loginApi.pending, (state) => {
-            state.isLoading = true
-        })
-        .addCase(loginApi.fulfilled, (state, action) => {
-            state.isLoading = false
-            state.user = action.payload.user
-            state.isAuth = true
-        })
-        .addCase(loginApi.rejected, (state) => {
-            state.isLoading = false
-            state.isAuth = false
-        })
-
-         // registerApi
-        .addCase(registerApi.pending, (state) => {
-            state.isLoading = true
-        })
-        .addCase(registerApi.fulfilled, (state, action) => {
-            state.isLoading = false
-            state.user = action.payload.user
-            state.isAuth = true
-        })
-        .addCase(registerApi.rejected, (state) => {
-            state.isLoading = false
-            state.isAuth = false
-        })
-
-        // logoutApi
-        .addCase(logoutApi.pending, (state) => {
-            state.isLoading = true
-        })
-        .addCase(logoutApi.fulfilled, (state) => {
-            state.isLoading = false
-            state.user = undefined
-            state.users = undefined
-            state.isAuth = false
-        })
-
-        // checkAuth
-        .addCase(checkAuthApi.pending, (state) => {
-            state.isLoading = true
-        })
-        .addCase(checkAuthApi.fulfilled, (state, action) => {
-            state.isLoading = false
-            state.user = action.payload.user
-            state.isAuth = true
-        })
-        .addCase(checkAuthApi.rejected, (state) => {
-            state.isLoading = false
-            state.isAuth = false
-        })
-
-
-        .addCase(fetchUsers.fulfilled, (state, action) => {
-            console.log(action.payload, 'action.payload')
-            state.users = action.payload
-        })
-
+        builder.addMatcher(
+            isAnyOf(
+                authApi.endpoints.login.matchFulfilled,
+                authApi.endpoints.register.matchFulfilled,
+                authApi.endpoints.refresh.matchFulfilled
+            ),
+            (state, {payload}) => {
+                state.user = payload.user
+                state.isAuth = true
+                state.accessToken = payload.accessToken
+            }
+        )
+            .addMatcher(authApi.endpoints.logout.matchFulfilled, (state) => {
+                state.user = null
+                state.isAuth = false
+                state.accessToken = null
+            })
     }
 })
 
 export const userActions = userSlice.actions
 export default userSlice.reducer
+

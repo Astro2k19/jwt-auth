@@ -1,14 +1,12 @@
 import { useNavigate, Link } from "react-router-dom";
-import { useContext } from "react";
-import {useAppDispatch} from "../store/store.ts";
-import {logoutApi} from "../api/logoutApi.ts";
+import {useLogoutMutation} from "../api/authApi.ts";
 
 const Home = () => {
     const navigate = useNavigate();
-    const dispatch = useAppDispatch()
+    const [logout] = useLogoutMutation()
 
-    const logout = async () => {
-        dispatch(logoutApi())
+    const signOut = async () => {
+        await logout({});
         navigate('/linkpage');
     }
 
@@ -26,7 +24,7 @@ const Home = () => {
             <br />
             <Link to="/linkpage">Go to the link page</Link>
             <div className="flexGrow">
-                <button onClick={logout}>Sign Out</button>
+                <button onClick={signOut}>Sign Out</button>
             </div>
         </section>
     )

@@ -1,35 +1,55 @@
-import axios from "axios";
-import AuthService from "../services/AuthService.ts";
+import {
+    BaseQueryFn,
+    createApi,
+    FetchArgs,
+    fetchBaseQuery,
+    FetchBaseQueryError
+} from "@reduxjs/toolkit/query/react";
+import {RootState} from "../store/store.ts";
+import {userActions} from "../slices/userSlice.ts";
 
 export const BASE_URL = 'http://localhost:3500'
 
-export const $api = axios.create({
-    baseURL: BASE_URL,
-    withCredentials: true
+const baseQuery = fetchBaseQuery({
+    baseUrl: BASE_URL,
+    prepareHeaders: (headers, {getState}) => {
+        const {user} = getState() as RootState
+
+        if (user.accessToken) {
+            headers.set('authorization', `Bearer ${user.accessToken}`)
+        }
+
+        return headers
+    },
+    credentials: 'include'
 })
 
-$api.interceptors.request.use((config) => {
-    config.headers.authorization = `Bearer ${localStorage.getItem('token')}`
-    return config
-})
+const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
+    args,
+    api,
+    extraOptions
+) => {
+    let result = await baseQuery(args, api, extraOptions)
 
-$api.interceptors.response.use((response) => {
-    return response
-
-}, async (error) => {
-    const isRetry = error.config._isRetry
-
-    if (error.response.status === 401 && error.config && !isRetry) {
-        try {
-            const response = await AuthService.checkAuth()
-            localStorage.setItem('token', response.accessToken)
-            error.config._isRetry = true
-            return await $api.request(error.config)
-        } catch (e) {
-            console.log(e)
+    if (result.error && result.error.status === 401) {
+        console.log(result.error, 'result.error')
+        const refreshResult = await baseQuery('/refresh', api, extraOptions)
+        // TODO: FIX isRetry
+        if (refreshResult.data) {
+            // we have matcher in user slide, so we don't need update it manually, it is done automatically
+            result = await baseQuery(args, api, extraOptions)
+        } else {
+            api.dispatch(userActions.logout())
         }
     }
 
-    throw error
+    return result
+}
+
+
+export const $api = createApi({
+    baseQuery: baseQueryWithReauth,
+    endpoints: () => ({})
 })
+
 

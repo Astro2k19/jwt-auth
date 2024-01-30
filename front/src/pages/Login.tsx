@@ -1,19 +1,23 @@
-import {useRef, useState, useEffect, FormEventHandler} from 'react';
-import {loginApi} from "../api/loginApi.ts";
-import {useAppDispatch} from "../store/store.ts";
+import {useRef, useState, useEffect, FormEventHandler, ChangeEventHandler} from 'react';
 import {Link, useLocation, useNavigate} from "react-router-dom";
+import {useLoginMutation} from "../api/authApi.ts";
+import {userActions} from "../slices/userSlice.ts";
+import {useAppDispatch, useAppSelector} from "../store/store.ts";
 
 const Login = () => {
     const emailRef = useRef<HTMLInputElement | null>(null);
     const errRef = useRef<HTMLParagraphElement | null>(null);
+    const [login] = useLoginMutation()
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errMsg, setErrMsg] = useState('');
-    const dispatch = useAppDispatch()
     const navigate = useNavigate()
     const location = useLocation()
     const from = location.state?.from?.pathname || '/'
+
+    const dispatch = useAppDispatch()
+    const {isPersist} = useAppSelector(state => state.user)
 
     useEffect(() => {
         emailRef.current?.focus();
@@ -25,9 +29,12 @@ const Login = () => {
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
-
-        await dispatch(loginApi({email, password}))
+        await login({email, password})
         navigate(from, {replace: true})
+    }
+
+    const togglePersist: ChangeEventHandler<HTMLInputElement> = (event ) => {
+        dispatch(userActions.setPersist(event.target.checked))
     }
 
     return (
@@ -55,6 +62,15 @@ const Login = () => {
                     required
                 />
                 <button>Sign In</button>
+                <div className="persistCheck">
+                    <input
+                        type="checkbox"
+                        id="persist"
+                        onChange={togglePersist}
+                        checked={isPersist}
+                    />
+                    <label htmlFor="persist">Trust This Device</label>
+                </div>
             </form>
             <p>
                 Need an Account?<br />

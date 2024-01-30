@@ -61,9 +61,11 @@ class UserService {
         }
 
         const tokenFromDb = await TokenService.findToken(refreshToken)
-        console.log(tokenFromDb, 'tokenFromDb')
         const decoded = TokenService.verifyRefreshToken(refreshToken)
+
+        console.log(tokenFromDb, 'tokenFromDb')
         console.log(decoded, 'decoded')
+        console.log(refreshToken, 'refreshToken')
 
         if (!tokenFromDb || !decoded) {
             throw ApiError.Unauthorized()
@@ -72,10 +74,9 @@ class UserService {
 
         const user = await User.findById(tokenFromDb.user)
         const dtoUser = new DtoUser(user)
-        const jwtTokens = TokenService.generateTokens({...dtoUser})
-        await TokenService.saveRefreshToken(dtoUser.id, jwtTokens.refreshToken)
+        const accessToken = TokenService.generateAccessToken({...dtoUser})
 
-        return {...jwtTokens, user: dtoUser}
+        return {accessToken, user: dtoUser}
     }
 
     async logout(refreshToken) {
@@ -83,8 +84,7 @@ class UserService {
             throw ApiError.Unauthorized()
         }
 
-        const tokenData = await TokenService.removeToken(refreshToken)
-        return tokenData;
+        return await TokenService.removeToken(refreshToken);
     }
 
 }

@@ -11,7 +11,7 @@ export const RequiredAuth = ({allowedRoles}:RequiredAuthProps) => {
     const location = useLocation()
     const hasAllowedRoles = authData?.user?.roles.some(userRole => allowedRoles?.includes(userRole))
 
-    console.log(location, 'location')
+    console.log(authData, 'authData')
 
     return (
         hasAllowedRoles
