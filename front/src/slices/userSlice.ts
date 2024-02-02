@@ -13,7 +13,7 @@ interface UserState {
 const initialState: UserState = {
     user: null,
     accessToken: null,
-    isPersist: false,
+    isPersist: JSON.parse(localStorage.getItem('persist') || 'false'),
     isAuth: false,
 }
 

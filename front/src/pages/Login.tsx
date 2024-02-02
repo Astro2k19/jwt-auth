@@ -35,6 +35,7 @@ const Login = () => {
 
     const togglePersist: ChangeEventHandler<HTMLInputElement> = (event ) => {
         dispatch(userActions.setPersist(event.target.checked))
+        localStorage.setItem('persist', JSON.stringify(event.target.checked))
     }
 
     return (
