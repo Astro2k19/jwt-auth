@@ -1,17 +1,30 @@
-import {useRef, useState, useEffect, FormEventHandler, ChangeEventHandler} from 'react';
+import {useRef, useState, useEffect, FormEventHandler,} from 'react';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {useLoginMutation} from "../api/authApi.ts";
 import {userActions} from "../slices/userSlice.ts";
 import {useAppDispatch, useAppSelector} from "../store/store.ts";
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import {ApiError} from "../model/response/ApiError.ts";
+import {Alert} from "@mui/material";
+import {UnwrapPromise} from "@reduxjs/toolkit/dist/query/tsHelpers";
+import {FetchBaseQueryError} from "@reduxjs/toolkit/query/react";
 
 const Login = () => {
     const emailRef = useRef<HTMLInputElement | null>(null);
-    const errRef = useRef<HTMLParagraphElement | null>(null);
     const [login] = useLoginMutation()
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errMsg, setErrMsg] = useState('');
+    const [error, setError] = useState<ApiError | null>(null);
     const navigate = useNavigate()
     const location = useLocation()
     const from = location.state?.from?.pathname || '/'
@@ -24,62 +37,111 @@ const Login = () => {
     }, [])
 
     useEffect(() => {
-        setErrMsg('');
+        setError(null);
     }, [email, password])
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
-        await login({email, password})
-        navigate(from, {replace: true})
+        try {
+            await login({email, password}).unwrap()
+            navigate(from, {replace: true})
+        } catch (error) {
+            const apiError = error as {data: ApiError}
+            setError(apiError.data)
+        }
     }
 
-    const togglePersist: ChangeEventHandler<HTMLInputElement> = (event ) => {
-        dispatch(userActions.setPersist(event.target.checked))
-        localStorage.setItem('persist', JSON.stringify(event.target.checked))
+    const togglePersist = (_: any, checked: boolean) => {
+        dispatch(userActions.setPersist(checked))
+        localStorage.setItem('persist', JSON.stringify(checked))
     }
 
     return (
-        <section>
-            <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
-            <h1>Sign In</h1>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="emailname">Email:</label>
-                <input
-                    type="email"
-                    id="emailname"
-                    ref={emailRef}
-                    autoComplete="off"
-                    onChange={(e) => setEmail(e.target.value)}
-                    value={email}
-                    required
-                />
-
-                <label htmlFor="password">Password:</label>
-                <input
-                    type="password"
-                    id="password"
-                    onChange={(e) => setPassword(e.target.value)}
-                    value={password}
-                    required
-                />
-                <button>Sign In</button>
-                <div className="persistCheck">
-                    <input
-                        type="checkbox"
-                        id="persist"
-                        onChange={togglePersist}
-                        checked={isPersist}
-                    />
-                    <label htmlFor="persist">Trust This Device</label>
-                </div>
-            </form>
-            <p>
-                Need an Account?<br />
-                <span className="line">
-                    <Link to={'/register'}> Sign up </Link>
-                        </span>
-            </p>
-        </section>
+        <Grid container component="main" sx={{height: '100vh'}}>
+            <CssBaseline/>
+            <Grid
+                item
+                xs={false}
+                sm={4}
+                md={7}
+                sx={{
+                    backgroundImage: 'url(https://source.unsplash.com/random?wallpapers)',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundColor: (t) =>
+                        t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                }}
+            />
+            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+                <Box
+                    sx={{
+                        my: 8,
+                        mx: 4,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+                        <LockOutlinedIcon/>
+                    </Avatar>
+                    <Typography component="h1" variant="h5">
+                        Sign in
+                    </Typography>
+                    <Box component="form" onSubmit={handleSubmit} sx={{mt: 1, width: '100%'}}>
+                        {error && <Alert severity="error">{error.message}</Alert>}
+                        <TextField
+                            type="email"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="email"
+                            label="Email Address"
+                            name="email"
+                            autoComplete="email"
+                            autoFocus
+                            value={email}
+                            onChange={(event) => setEmail(event.target.value)}
+                            ref={emailRef}
+                        />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="password"
+                            label="Password"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                            value={password}
+                            onChange={(event) => setPassword(event.target.value)}
+                        />
+                        <FormControlLabel
+                            control={<Checkbox value="remember" color="primary"/>}
+                            label="Remember me"
+                            value={isPersist}
+                            onChange={togglePersist}
+                        />
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{mt: 3, mb: 2}}
+                        >
+                            Sign In
+                        </Button>
+                        <Grid container>
+                            <Grid item>
+                                <Link to="/register">
+                                    {"Don't have an account? Sign Up"}
+                                </Link>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Box>
+            </Grid>
+        </Grid>
     )
 }
 

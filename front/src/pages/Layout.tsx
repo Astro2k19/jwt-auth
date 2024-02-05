@@ -1,10 +1,11 @@
 import { Outlet } from "react-router-dom"
+import Grid from "@mui/material/Grid";
 
 const Layout = () => {
     return (
-        <div className={'App'}>
+        <Grid component="main" sx={{height: '100vh'}}>
             <Outlet />
-        </div>
+        </Grid>
     )
 }
 

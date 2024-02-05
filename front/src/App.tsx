@@ -1,4 +1,3 @@
-import './index.css'
 import {Route, Routes} from "react-router-dom";
 import Layout from "./pages/Layout.tsx";
 import Home from "./pages/Home.tsx";
@@ -19,7 +18,6 @@ function App() {
     return (
         <Routes>
             <Route path={'/'} element={<Layout/>}>
-
                 <Route element={<PersistentLogin />}>
                     <Route element={<RequiredAuth allowedRoles={[UserRoles.User]} />}>
                         <Route path={'/'} element={<Home />} />

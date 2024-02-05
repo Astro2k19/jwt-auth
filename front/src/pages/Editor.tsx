@@ -1,15 +1,16 @@
 import { Link } from "react-router-dom"
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import {Users} from "../components/Users.tsx";
 
 const Editor = () => {
     return (
-        <section>
-            <h1>Editors Page</h1>
-            <br />
-            <p>You must have been assigned an Editor role.</p>
-            <div className="flexGrow">
-                <Link to="/">Home</Link>
-            </div>
-        </section>
+        <Grid>
+            <Typography variant={'h3'} gutterBottom>Editors Page</Typography>
+            <Typography>You must have been assigned an Editor role.</Typography>
+            <Users />
+            <Link to="/">Home</Link>
+        </Grid>
     )
 }
 

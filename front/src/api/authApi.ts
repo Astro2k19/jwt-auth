@@ -1,5 +1,6 @@
 import {$api} from "./index.js";
 import {AuthResponse} from "../model/response/AuthResponse.ts";
+import {User} from "../model/User.ts";
 
 interface AuthArgs {
     email: string
@@ -34,7 +35,7 @@ export const authApi = $api.injectEndpoints({
                 method: 'POST'
             }),
         }),
-        fetchUsers: build.query({
+        fetchUsers: build.query<User[], undefined>({
             query: () => ({
                 url: '/users',
                 method: 'GET'
