@@ -1,11 +1,9 @@
-import {useRef, useState, useEffect, FormEventHandler,} from 'react';
-import {Link, useLocation, useNavigate} from "react-router-dom";
+import {FormEventHandler, useEffect, useRef, useState,} from 'react';
+import {useLocation, useNavigate} from "react-router-dom";
 import {useLoginMutation} from "../api/authApi.ts";
 import {userActions} from "../slices/userSlice.ts";
 import {useAppDispatch, useAppSelector} from "../store/store.ts";
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -15,13 +13,13 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import {ApiError} from "../model/response/ApiError.ts";
-import {Alert} from "@mui/material";
-import {UnwrapPromise} from "@reduxjs/toolkit/dist/query/tsHelpers";
-import {FetchBaseQueryError} from "@reduxjs/toolkit/query/react";
+import {Alert, Link} from "@mui/material";
+import {RouterLink} from "../components/RouterLink.tsx";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const Login = () => {
     const emailRef = useRef<HTMLInputElement | null>(null);
-    const [login] = useLoginMutation()
+    const [login, {isLoading}] = useLoginMutation()
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<ApiError | null>(null);
@@ -58,7 +56,6 @@ const Login = () => {
 
     return (
         <Grid container component="main" sx={{height: '100vh'}}>
-            <CssBaseline/>
             <Grid
                 item
                 xs={false}
@@ -123,19 +120,19 @@ const Login = () => {
                             value={isPersist}
                             onChange={togglePersist}
                         />
-                        <Button
+                        <LoadingButton
                             type="submit"
+                            loading={isLoading}
+                            loadingPosition="end"
                             fullWidth
                             variant="contained"
                             sx={{mt: 3, mb: 2}}
                         >
-                            Sign In
-                        </Button>
+                            <span>Sign In</span>
+                        </LoadingButton>
                         <Grid container>
                             <Grid item>
-                                <Link to="/register">
-                                    {"Don't have an account? Sign Up"}
-                                </Link>
+                                <Link component={RouterLink} to="/register">Don't have an account? Sign Up</Link>
                             </Grid>
                         </Grid>
                     </Box>

@@ -1,16 +1,17 @@
-import { Link } from "react-router-dom"
 import {Users} from "../components/Users.tsx";
-import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
+import {Page} from "../components/Page.tsx";
+import {RouterLink} from "../components/RouterLink.tsx";
+import { Link } from "@mui/material";
 
 const Admin = () => {
     return (
-        <Grid>
+        <Page>
             <Typography variant={'h3'} gutterBottom>Admins Page</Typography>
             <Typography>You must have been assigned an Admin role.</Typography>
             <Users />
-            <Link to="/">Home</Link>
-        </Grid>
+            <Link component={RouterLink} to="/">Home</Link>
+        </Page>
     )
 }
 

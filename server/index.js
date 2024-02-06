@@ -19,6 +19,12 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(morgan('combined'))
 
+app.use((req, res, next) => {
+    setTimeout(() => {
+        next()
+    }, 2000)
+})
+
 app.use('/', router)
 
 app.use('*', (req, res) => {

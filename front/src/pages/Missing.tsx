@@ -1,14 +1,16 @@
-import { Link } from "react-router-dom"
+
+import {Page} from "../components/Page.tsx";
+import Typography from "@mui/material/Typography";
+import {RouterLink} from "../components/RouterLink.tsx";
+import { Link } from "@mui/material";
 
 const Missing = () => {
     return (
-        <article style={{ padding: "100px" }}>
-            <h1>Oops!</h1>
-            <p>Page Not Found</p>
-            <div className="flexGrow">
-                <Link to="/">Visit Our Homepage</Link>
-            </div>
-        </article>
+        <Page>
+            <Typography variant='h3' gutterBottom>Oops!</Typography>
+            <Typography gutterBottom>Page Not Found</Typography>
+            <Link component={RouterLink} to="/">Home</Link>
+        </Page>
     )
 }
 

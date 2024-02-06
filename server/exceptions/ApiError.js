@@ -18,4 +18,8 @@ module.exports = class ApiError extends Error {
         return new ApiError(401, 'You are not authorized!', errors)
     }
 
+    static Forbidden(errors = []) {
+        return new ApiError(403, 'Forbidden access!', errors)
+    }
+
 }

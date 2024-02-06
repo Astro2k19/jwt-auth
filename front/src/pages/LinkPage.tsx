@@ -1,20 +1,40 @@
-import { Link } from "react-router-dom"
+import Typography from "@mui/material/Typography";
+import {RouterLink} from "../components/RouterLink";
+import {Link, List, ListItem} from "@mui/material";
+import {useAppSelector} from "../store/store.ts";
+import {Page} from "../components/Page.tsx";
 
-const LinkPage = () => {
+const RouterLinkPage = () => {
+    const {isAuth} = useAppSelector(state => state.user)
+
     return (
-        <section>
-            <h1>Links</h1>
-            <br />
-            <h2>Public</h2>
-            <Link to="/login">Login</Link>
-            <Link to="/register">Register</Link>
-            <br />
-            <h2>Private</h2>
-            <Link to="/">Home</Link>
-            <Link to="/editor">Editors Page</Link>
-            <Link to="/admin">Admin Page</Link>
-        </section>
+        <Page>
+                <Typography variant={'h3'} gutterBottom>RouterLinks</Typography>
+                {!isAuth && <>
+                    <Typography variant={'h4'} gutterBottom>Public</Typography>
+                    <List>
+                        <ListItem>
+                            <Link component={RouterLink} fontSize={18} to="/login">Login</Link>
+                        </ListItem>
+                        <ListItem>
+                            <Link component={RouterLink} to="/register">Register</Link>
+                        </ListItem>
+                    </List>
+                </>}
+                <Typography variant={'h4'} gutterBottom>Private</Typography>
+                <List>
+                    <ListItem>
+                        <Link component={RouterLink} to="/">Home</Link>
+                    </ListItem>
+                    <ListItem>
+                        <Link component={RouterLink} to="/editor">Editors Page</Link>
+                    </ListItem>
+                    <ListItem>
+                        <Link component={RouterLink} to="/admin">Admin Page</Link>
+                    </ListItem>
+                </List>
+        </Page>
     )
 }
 
-export default LinkPage
+export default RouterLinkPage

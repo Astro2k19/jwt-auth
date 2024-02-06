@@ -1,15 +1,16 @@
-import { Link } from "react-router-dom"
+
+import {Page} from "../components/Page.tsx";
+import Typography from "@mui/material/Typography";
+import {RouterLink} from "../components/RouterLink.tsx";
+import { Link } from "@mui/material";
 
 const Lounge = () => {
     return (
-        <section>
-            <h1>The Lounge</h1>
-            <br />
-            <p>Admins and Editors can hang out here.</p>
-            <div className="flexGrow">
-                <Link to="/">Home</Link>
-            </div>
-        </section>
+        <Page>
+            <Typography variant='h3' gutterBottom>The Lounge</Typography>
+            <Typography gutterBottom>Admins and Editors can hang out here.</Typography>
+            <Link component={RouterLink} to="/">Home</Link>
+        </Page>
     )
 }
 

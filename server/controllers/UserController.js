@@ -75,15 +75,6 @@ class UserController {
     }
 
 
-    async getAllUsers(req, res, next) {
-        try {
-            const users = await User.find({}, '-password')
-            res.json(users)
-        } catch (e) {
-            next(e)
-        }
-    }
-
 }
 
 module.exports = new UserController()

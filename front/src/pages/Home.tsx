@@ -1,9 +1,10 @@
-import { useNavigate, Link } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {useLogoutMutation} from "../api/authApi.ts";
-import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import {Users} from "../components/Users.tsx";
 import Button from "@mui/material/Button";
+import {Link, List, ListItem} from "@mui/material";
+import {RouterLink} from "../components/RouterLink.tsx";
+import {Page} from "../components/Page.tsx";
 
 const Home = () => {
     const navigate = useNavigate();
@@ -15,32 +16,32 @@ const Home = () => {
     }
 
     return (
-        <Grid>
-            <Typography variant={'h3'} gutterBottom>Editors Page</Typography>
-            <Typography>You must have been assigned an Editor role.</Typography>
-            <Users />
-            <Link to="/">Home</Link>
-
+        <Page>
             <Typography variant={'h3'} gutterBottom>Home</Typography>
             <Typography>You are logged in!</Typography>
-            <br />
-            <Link to="/editor">Go to the Editor page</Link>
-            <br />
-            <Link to="/admin">Go to the Admin page</Link>
-            <br />
-            <Link to="/lounge">Go to the Lounge</Link>
-            <br />
-            <Link to="/linkpage">Go to the link page</Link>
+            <List>
+                <ListItem>
+                    <Link component={RouterLink} to="/editor">Go to the Editor page</Link>
+                </ListItem>
+                <ListItem>
+                    <Link component={RouterLink} to="/admin">Go to the Admin page</Link>
+                </ListItem>
+                <ListItem>
+                    <Link component={RouterLink} to="/lounge">Go to the Lounge</Link>
+                </ListItem>
+                <ListItem>
+                    <Link component={RouterLink} to="/linkpage">Go to the link page</Link>
+                </ListItem>
+            </List>
             <Button
                 type="submit"
-                fullWidth
                 variant="contained"
                 sx={{mt: 3, mb: 2}}
                 onClick={signOut}
             >
                 Sign Out
             </Button>
-        </Grid>
+        </Page>
     )
 }
 

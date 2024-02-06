@@ -1,21 +1,21 @@
 import {FormEventHandler, useEffect, useRef, useState} from "react";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {useRegisterMutation} from "../api/authApi.ts";
 import Grid from "@mui/material/Grid";
-import CssBaseline from "@mui/material/CssBaseline";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
-import {Alert} from "@mui/material";
+import {Alert, Link} from "@mui/material";
 import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import {ApiError} from "../model/response/ApiError.ts";
+import {RouterLink} from "../components/RouterLink.tsx";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 
 const Register = () => {
-    const [register] = useRegisterMutation()
+    const [register, {isLoading}] = useRegisterMutation()
     const emailRef = useRef<HTMLInputElement | null>(null);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -46,7 +46,6 @@ const Register = () => {
 
     return (
         <Grid container sx={{height: '100%'}}>
-            <CssBaseline/>
             <Grid
                 item
                 xs={false}
@@ -117,19 +116,19 @@ const Register = () => {
                             value={passwordMatch}
                             onChange={(event) => setPasswordMatch(event.target.value)}
                         />
-                        <Button
+                        <LoadingButton
                             type="submit"
+                            loading={isLoading}
+                            loadingPosition="end"
                             fullWidth
                             variant="contained"
                             sx={{mt: 3, mb: 2}}
                         >
-                            Sign Up
-                        </Button>
+                            <span>Sign Up</span>
+                        </LoadingButton>
                         <Grid container>
                             <Grid item>
-                                <Link to="/login">
-                                    {"Have an account? Sign In"}
-                                </Link>
+                                <Link component={RouterLink} to="/login">Have an account? Sign In</Link>
                             </Grid>
                         </Grid>
                     </Box>
