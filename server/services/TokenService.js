@@ -12,11 +12,11 @@ class TokenService {
     }
 
     generateAccessToken(payload) {
-        return jwt.sign(payload, process.env.ACCESS_SECRET_TOKEN, {expiresIn: '15m'})
+        return jwt.sign(payload, process.env.ACCESS_SECRET_TOKEN, {expiresIn: '10s'})
     }
 
     generateRefreshToken(payload) {
-        return jwt.sign(payload, process.env.REFRESH_SECRET_TOKEN, {expiresIn: '1d'})
+        return jwt.sign(payload, process.env.REFRESH_SECRET_TOKEN, {expiresIn: '30s'})
     }
 
     async saveRefreshToken(userId, token) {

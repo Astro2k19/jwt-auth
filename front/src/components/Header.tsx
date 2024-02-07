@@ -12,8 +12,10 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import {Link} from "@mui/material";
+import {Link, List, ListItem} from "@mui/material";
 import {RouterLink} from "./RouterLink.tsx";
+import {useNavigate} from "react-router-dom";
+import {useLogoutMutation} from "../api/authApi.ts";
 
 const pages = [
     {
@@ -31,14 +33,18 @@ const pages = [
     {
         title: 'Lounge',
         path: '/lounge'
+    },
+    {
+        title: 'Links page',
+        path: '/linkpage'
     }
 ];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-
+    const navigate = useNavigate();
+    const [logout] = useLogoutMutation()
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
     };
@@ -50,33 +56,45 @@ function ResponsiveAppBar() {
         setAnchorElNav(null);
     };
 
-    const handleCloseUserMenu = () => {
+    const handleCloseUserMenu = (callback?: () => void) => {
         setAnchorElUser(null);
+        callback?.();
     };
+
+    const signOut = async () => {
+        await logout({});
+        navigate('/linkpage');
+    }
+
+    const settings = [
+        {
+            title: 'Profile',
+            href: '/profile'
+        },
+        {
+            title:'Logout',
+            click: signOut
+        }
+    ];
 
     return (
         <AppBar position="static">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'none', md: 'flex' },
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        LOGO
-                    </Typography>
-
+                    <Link sx={{
+                        mr: 2,
+                        display: { xs: 'none', md: 'flex' },
+                        fontFamily: 'monospace',
+                        fontWeight: 700,
+                        letterSpacing: '.3rem',
+                        color: 'inherit',
+                        textDecoration: 'none',
+                    }}
+                      component={RouterLink}
+                      fontSize={18}
+                      to={'/'}
+                    >LOGO</Link>
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
                             size="large"
@@ -134,18 +152,18 @@ function ResponsiveAppBar() {
                     >
                         LOGO
                     </Typography>
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                    <List sx={{ flexGrow: 1, p: 0, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map(({title, path}) => (
-                            <Button
+                            <ListItem
                                 key={title}
                                 onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
+                                sx={{ my: 2, color: 'white', width: 'auto', ':hover': {backgroundColor: 'rgba(255, 255, 255, 0.08)'} }}
+                                color={'warning'}
                             >
-                                {title}
-                            </Button>
+                                <Link component={RouterLink} underline={'none'} color={'white'} to={path}>{title}</Link>
+                            </ListItem>
                         ))}
-                    </Box>
-
+                    </List>
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -166,13 +184,26 @@ function ResponsiveAppBar() {
                                 horizontal: 'right',
                             }}
                             open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
+                            onClose={() => handleCloseUserMenu()}
                         >
-                            {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center">{setting}</Typography>
-                                </MenuItem>
-                            ))}
+                            {settings.map((setting) => {
+
+                                if (setting.href) {
+                                    return (
+                                        <MenuItem key={setting.title} onClick={() => handleCloseUserMenu()}>
+                                            <Typography textAlign="center">
+                                                <Link component={RouterLink} to={setting.href} underline={'none'} color={'white'}>{setting.title}</Link>
+                                            </Typography>
+                                        </MenuItem>
+                                    )
+                                }
+
+                                return (
+                                    <MenuItem key={setting.title} onClick={() => handleCloseUserMenu(setting.click)}>
+                                        <Typography textAlign="center">{setting.title}</Typography>
+                                    </MenuItem>
+                                )
+                            })}
                         </Menu>
                     </Box>
                 </Toolbar>

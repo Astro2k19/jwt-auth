@@ -10,7 +10,6 @@ const Admin = () => {
             <Typography variant={'h3'} gutterBottom>Admins Page</Typography>
             <Typography>You must have been assigned an Admin role.</Typography>
             <Users />
-            <Link component={RouterLink} to="/">Home</Link>
         </Page>
     )
 }

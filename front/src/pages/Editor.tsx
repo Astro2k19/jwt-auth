@@ -9,7 +9,6 @@ const Editor = () => {
             <Typography variant={'h3'} gutterBottom>Editors Page</Typography>
             <Typography>You must have been assigned an Editor role.</Typography>
             <Users />
-            <Link to="/">Home</Link>
         </Page>
     )
 }

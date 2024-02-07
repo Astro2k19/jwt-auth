@@ -20,7 +20,7 @@ const Layout = () => {
         <ThemeProvider theme={darkTheme}>
             <CssBaseline />
             {isAuth && <ResponsiveAppBar/>}
-            <Grid component="main" sx={{height: '100vh'}}>
+            <Grid component="main" sx={{height: 'calc(100vh - 68.5px)'}}>
                 <Outlet />
             </Grid>
         </ThemeProvider>

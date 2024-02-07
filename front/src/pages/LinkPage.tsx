@@ -10,17 +10,15 @@ const RouterLinkPage = () => {
     return (
         <Page>
                 <Typography variant={'h3'} gutterBottom>RouterLinks</Typography>
-                {!isAuth && <>
-                    <Typography variant={'h4'} gutterBottom>Public</Typography>
-                    <List>
-                        <ListItem>
-                            <Link component={RouterLink} fontSize={18} to="/login">Login</Link>
-                        </ListItem>
-                        <ListItem>
-                            <Link component={RouterLink} to="/register">Register</Link>
-                        </ListItem>
-                    </List>
-                </>}
+            <Typography variant={'h4'} gutterBottom>Public</Typography>
+            <List>
+                <ListItem>
+                    <Link component={RouterLink} fontSize={18} to="/login">Login</Link>
+                </ListItem>
+                <ListItem>
+                    <Link component={RouterLink} to="/register">Register</Link>
+                </ListItem>
+            </List>
                 <Typography variant={'h4'} gutterBottom>Private</Typography>
                 <List>
                     <ListItem>

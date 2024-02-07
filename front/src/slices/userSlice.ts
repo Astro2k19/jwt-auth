@@ -21,6 +21,10 @@ const userSlice = createSlice({
     name: 'user',
     initialState: initialState,
     reducers: {
+        setCredentials: (state, {payload}: PayloadAction<Pick<typeof initialState, 'user' | 'accessToken'>>) => {
+            state.user = payload.user
+            state.accessToken = payload.accessToken
+        },
         setPersist: (state, {payload}: PayloadAction<boolean>) => {
             state.isPersist = payload
         },
@@ -38,6 +42,7 @@ const userSlice = createSlice({
                 authApi.endpoints.refresh.matchFulfilled
             ),
             (state, {payload}) => {
+                console.log('addMatcher')
                 state.user = payload.user
                 state.isAuth = true
                 state.accessToken = payload.accessToken

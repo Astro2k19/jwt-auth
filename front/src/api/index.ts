@@ -30,13 +30,14 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
     extraOptions
 ) => {
     let result = await baseQuery(args, api, extraOptions)
+    const url = typeof args === 'string' ? args : args.url
 
-    if (result.error && result.error.status === 401) {
+    if (result.error && result.error.status === 401 && url !== '/refresh') {
         console.log(result.error, 'result.error')
         const refreshResult = await baseQuery('/refresh', api, extraOptions)
         // TODO: FIX isRetry
         if (refreshResult.data) {
-            // we have matcher in user slide, so we don't need update it manually, it is done automatically
+            api.dispatch(userActions.setCredentials(refreshResult.data))
             result = await baseQuery(args, api, extraOptions)
         } else {
             api.dispatch(userActions.logout())
