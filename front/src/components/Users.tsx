@@ -1,5 +1,6 @@
 import {useFetchUsersQuery} from "../api/authApi.ts";
-import {List, ListItem, ListItemButton, ListItemText, Skeleton} from "@mui/material";
+import {List, ListItem, ListItemButton, Skeleton} from "@mui/material";
+import {UserListItem} from "./UserListItem.tsx";
 
 export const Users = () => {
     const {data, isLoading} = useFetchUsersQuery(undefined)
@@ -22,11 +23,7 @@ export const Users = () => {
     return (
         <List>
             {data?.map(user => (
-                <ListItem disablePadding>
-                    <ListItemButton>
-                        <ListItemText primary={user.email} />
-                    </ListItemButton>
-                </ListItem>
+                <UserListItem user={user} />
             ))}
         </List>
     );

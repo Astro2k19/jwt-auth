@@ -10,7 +10,6 @@ import Missing from "./pages/Missing.tsx";
 import LinkPage from "./pages/LinkPage.tsx";
 import Unauthorized from "./pages/Unauthorized.tsx";
 import {RequiredAuth} from "./components/RequiredAuth.tsx";
-import {UserRoles} from "./model/User.ts";
 import {PersistentLogin} from "./components/PersistentLogin.tsx";
 
 
@@ -19,16 +18,16 @@ function App() {
         <Routes>
             <Route path={'/'} element={<Layout/>}>
                 <Route element={<PersistentLogin />}>
-                    <Route element={<RequiredAuth allowedRoles={[UserRoles.User]} />}>
+                    <Route element={<RequiredAuth allowedRoles={['User']} />}>
                         <Route path={'/'} element={<Home />} />
                     </Route>
-                    <Route element={<RequiredAuth allowedRoles={[UserRoles.Admin]} />}>
+                    <Route element={<RequiredAuth allowedRoles={['Admin']} />}>
                         <Route path={'admin'} element={<Admin />} />
                     </Route>
-                    <Route element={<RequiredAuth allowedRoles={[UserRoles.Editor]} />} >
+                    <Route element={<RequiredAuth allowedRoles={['Editor']} />} >
                         <Route path={'editor'} element={<Editor />} />
                     </Route>
-                    <Route element={<RequiredAuth allowedRoles={[UserRoles.User, UserRoles.Editor, UserRoles.Admin]} />}>
+                    <Route element={<RequiredAuth allowedRoles={['User', 'Editor', 'Admin']} />}>
                         <Route path={'lounge'} element={<Lounge />} />
                     </Route>
                 </Route>

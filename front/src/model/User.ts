@@ -5,8 +5,5 @@ export interface User {
     roles: UserRoles[]
 }
 
-export enum UserRoles {
-    User = 'User',
-    Editor = 'Editor',
-    Admin = 'Admin'
-}
+export type UserRoles = 'User' | 'Editor' | 'Admin'
+
