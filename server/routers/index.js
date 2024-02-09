@@ -24,7 +24,7 @@ router.get('/refresh', UserController.refresh)
 router.get('/activate/:link', UserController.activate)
 router.post('/logout', UserController.logout)
 router.get('/users', authMiddleware, rolesMiddleware(['Admin']), AdminController.getAllUsers)
-router.put('/user-roles/:id', authMiddleware, rolesMiddleware(['Admin']), AdminController.updateUserRoles)
+router.patch('/user-roles/:id', authMiddleware, rolesMiddleware(['Admin']), AdminController.updateUserRoles)
 
 
 

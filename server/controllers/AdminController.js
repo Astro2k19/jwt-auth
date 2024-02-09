@@ -15,7 +15,7 @@ class AdminController {
     async updateUserRoles(req, res, next) {
         try {
             const userId = req.params.id
-            const roles = req.params.body
+            const roles = req.body
             const updatedUser = await AdminService.updateUserRoles(userId, roles)
             const dtoUser = new DtoUser(updatedUser)
             res.json(dtoUser)

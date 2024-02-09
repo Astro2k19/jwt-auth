@@ -1,9 +1,11 @@
-import {useFetchUsersQuery} from "../api/authApi.ts";
 import {List, ListItem, ListItemButton, Skeleton} from "@mui/material";
 import {UserListItem} from "./UserListItem.tsx";
+import {useFetchUsersQuery} from "../api/adminApi.ts";
 
 export const Users = () => {
-    const {data, isLoading} = useFetchUsersQuery(undefined)
+    const {data, isLoading, isFetching} = useFetchUsersQuery(undefined)
+
+    console.log(isFetching, 'isFetching')
 
     if (isLoading) {
         return (
@@ -11,7 +13,7 @@ export const Users = () => {
                 {new Array(6).fill(null).map(_ => (
                     <ListItem disablePadding>
                         <ListItemButton>
-                            <Skeleton  width={250} height={30} />
+                            <Skeleton width={'100%'} height={30} />
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -23,7 +25,7 @@ export const Users = () => {
     return (
         <List>
             {data?.map(user => (
-                <UserListItem user={user} />
+                <UserListItem user={user} disabled={isFetching} />
             ))}
         </List>
     );

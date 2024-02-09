@@ -8,7 +8,7 @@ class AdminService {
             throw ApiError.BadRequest(`User with ${userId} id don't exist!`)
         }
 
-        user.roles = [...user.roles, ...roles]
+        user.roles = roles
         await user.save()
 
         return user

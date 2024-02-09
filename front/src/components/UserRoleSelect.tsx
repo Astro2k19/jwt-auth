@@ -1,4 +1,3 @@
-import {useState} from 'react';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -7,6 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import {SelectProps} from "@mui/material/Select/Select";
+import {forwardRef} from "react";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -20,14 +20,14 @@ const MenuProps = {
 };
 
 
-interface MultipleSelectCheckmarksProps<T extends string[]> extends Omit<SelectProps<string[]>, 'onChange'>{
-    selectedValues: T
-    allValues: T
+interface MultipleSelectCheckmarksProps extends Omit<SelectProps<string[]>, 'onChange'>{
+    selectedValues: string[]
+    allValues: string[]
     label: string
-    onChange: (value: T) => void
+    onChange: (value: string[]) => void
 }
 
-export const MultipleSelectCheckmarks = <T extends string[]>(props: MultipleSelectCheckmarksProps<T>) => {
+export const MultipleSelectCheckmarks = forwardRef((props: MultipleSelectCheckmarksProps, ref) => {
     const {
         selectedValues,
         allValues,
@@ -36,16 +36,15 @@ export const MultipleSelectCheckmarks = <T extends string[]>(props: MultipleSele
         ...rest
     } = props
 
-    const [value, setValue] = useState<T>(selectedValues);
-
-    const handleChange = (event: SelectChangeEvent<typeof value>) => {
+    const handleChange = (event: SelectChangeEvent<typeof selectedValues>) => {
         const {
             target: { value },
         } = event;
-        console.log(value, 'value MultipleSelectCheckmarks');
         const updatedValue = typeof value === 'string' ? value.split(',') : value
-        setValue(updatedValue);
-        onChange?.(updatedValue);
+
+        if (updatedValue.length >= 1) {
+            onChange?.(updatedValue);
+        }
     };
 
     return (
@@ -55,15 +54,16 @@ export const MultipleSelectCheckmarks = <T extends string[]>(props: MultipleSele
                 <Select
                     {...rest}
                     multiple
-                    value={value}
+                    value={selectedValues}
                     onChange={handleChange}
                     input={<OutlinedInput label="Tag" />}
                     renderValue={(selected) => selected.join(', ')}
                     MenuProps={MenuProps}
+                    ref={ref}
                 >
                     {allValues.map((name) => (
                         <MenuItem key={name} value={name}>
-                            <Checkbox checked={value.indexOf(name) > -1} />
+                            <Checkbox checked={selectedValues.indexOf(name) > -1} />
                             <ListItemText primary={name} />
                         </MenuItem>
                     ))}
@@ -71,4 +71,4 @@ export const MultipleSelectCheckmarks = <T extends string[]>(props: MultipleSele
             </FormControl>
         </div>
     );
-}
+})

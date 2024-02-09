@@ -34,14 +34,8 @@ export const authApi = $api.injectEndpoints({
                 url: '/logout',
                 method: 'POST'
             }),
-        }),
-        fetchUsers: build.query<User[], undefined>({
-            query: () => ({
-                url: '/users',
-                method: 'GET'
-            }),
-        }),
+        })
     })
 })
 
-export const {useLoginMutation, useRegisterMutation, useRefreshQuery, useLogoutMutation, useFetchUsersQuery } = authApi
+export const {useLoginMutation, useRegisterMutation, useRefreshQuery, useLogoutMutation } = authApi
