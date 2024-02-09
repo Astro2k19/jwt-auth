@@ -1,9 +1,13 @@
 import {Button, ButtonGroup, ListItem, ListItemText} from "@mui/material";
 import {User, UserRoles} from "../model/User.ts";
 import {MultipleSelectCheckmarks} from "./UserRoleSelect.tsx";
-import {useRef, useState} from "react";
+import {useState} from "react";
 import {useUpdateUserRolesMutation} from "../api/adminApi.ts";
 import LoadingButton from "@mui/lab/LoadingButton";
+import {useAppSelector} from "../store/store.ts";
+import Typography from "@mui/material/Typography";
+import {ApiError} from "../model/response/ApiError.ts";
+import { toast } from 'react-toastify';
 
 interface UserCardProps {
     user: User
@@ -13,38 +17,56 @@ interface UserCardProps {
 const allRoles: UserRoles[] = ['User', 'Editor', 'Admin']
 
 export const UserListItem = ({user, disabled}: UserCardProps) => {
+    const {user: currentUser} = useAppSelector(state => state)
     const [changedRoles, setChangedRoles] = useState<UserRoles[]>(user.roles)
-    const [updateUserRoles, {isLoading}] = useUpdateUserRolesMutation()
-    const [isOpen, setIsOpen] = useState(false)
-    const selectRef = useRef()
-    const hasRoleChanged = !(
-        user.roles.every(role => changedRoles.includes(role))
-        && changedRoles.every(role => user.roles.includes(role))
-    )
+    const [updateUserRoles, {isLoading, error}] = useUpdateUserRolesMutation()
+    const [controlButtonsShown, setControlButtonsShown] = useState(false)
     const onChange = (value: string[]) => {
         setChangedRoles(value as UserRoles[])
+        setControlButtonsShown(() => !(
+            user.roles.every(role => value.includes(role))
+            && value.every(role => user.roles.includes(role))
+        ))
     }
 
     const onCancel = () => {
         setChangedRoles(user.roles)
+        setControlButtonsShown(false)
     }
 
-    const onClose = () => {
-        setIsOpen(false)
+    const onSave = async () => {
+        try {
+            await updateUserRoles({
+                userId: user.id,
+                roles: changedRoles
+            }).unwrap();
+            setControlButtonsShown(false);
+        } catch (error) {
+            const apiError = error as {data: ApiError}
+            toast.error(apiError.data.message, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+            });
+        }
     }
 
-    const onSave = () => {
-        updateUserRoles({
-            userId: user.id,
-            roles: changedRoles
-        })
-        onClose()
-    }
+    console.log(error, 'error')
 
     return (
         <ListItem disablePadding sx={{display: 'flex', justifyContent: 'space-between', gap: '15px'}}>
-            <ListItemText primary={user.email} />
-            {hasRoleChanged && (
+            <ListItemText primary={
+                <>
+                    <Typography variant={'h6'}>{user.email}</Typography>
+                    {currentUser?.user?.id === user.id && <Typography variant={'subtitle2'} color={'success'}>Current user</Typography>}
+                </>
+            } />
+            {controlButtonsShown && (
                 <ButtonGroup
                     disableElevation
                     variant="outlined"
@@ -71,7 +93,6 @@ export const UserListItem = ({user, disabled}: UserCardProps) => {
                 labelId={`label-${user.id}`}
                 label={'Roles'}
                 disabled={isLoading}
-                open={isOpen}
             />
         </ListItem>
     );

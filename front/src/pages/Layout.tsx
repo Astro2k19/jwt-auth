@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom"
+import {Outlet, useLocation} from "react-router-dom"
 import Grid from "@mui/material/Grid";
 import { createTheme } from "@mui/material/styles";
 import {ThemeProvider} from "@mui/material";
@@ -14,12 +14,13 @@ const darkTheme = createTheme({
 });
 
 const Layout = () => {
-    const {isAuth} = useAppSelector(state => state.user)
+    const {pathname} = useLocation()
+    const notLoginOrRegister = !(pathname === '/login' || pathname === '/register')
 
     return (
         <ThemeProvider theme={darkTheme}>
             <CssBaseline />
-            {isAuth && <ResponsiveAppBar/>}
+            {notLoginOrRegister && <ResponsiveAppBar/>}
             <Grid component="main" sx={{height: 'calc(100vh - 68.5px)'}}>
                 <Outlet />
             </Grid>

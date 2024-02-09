@@ -37,6 +37,7 @@ export const MultipleSelectCheckmarks = forwardRef((props: MultipleSelectCheckma
     } = props
 
     const handleChange = (event: SelectChangeEvent<typeof selectedValues>) => {
+
         const {
             target: { value },
         } = event;

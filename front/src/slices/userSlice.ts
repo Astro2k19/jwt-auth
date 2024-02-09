@@ -2,7 +2,7 @@ import {createSlice, isAnyOf, PayloadAction} from '@reduxjs/toolkit'
 import {User} from "../model/User.ts";
 import {authApi} from "../api/authApi.ts";
 
-interface UserState {
+export interface UserState {
     user: User | null
     accessToken: string | null
     isAuth: boolean
@@ -42,7 +42,6 @@ const userSlice = createSlice({
                 authApi.endpoints.refresh.matchFulfilled
             ),
             (state, {payload}) => {
-                console.log('addMatcher')
                 state.user = payload.user
                 state.isAuth = true
                 state.accessToken = payload.accessToken
